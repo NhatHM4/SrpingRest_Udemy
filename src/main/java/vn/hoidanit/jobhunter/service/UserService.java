@@ -18,4 +18,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public User findById(Long id) {
+        return userRepository.findById(id).get();
+    }
+
 }
