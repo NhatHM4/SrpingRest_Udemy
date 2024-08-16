@@ -1,5 +1,6 @@
 package vn.hoidanit.jobhunter.service;
 
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.User;
@@ -24,6 +25,10 @@ public class UserService {
 
     public User findById(Long id) {
         return userRepository.findById(id).get();
+    }
+
+    public List<User> findAllUser() {
+        return userRepository.findAll();
     }
 
 }
