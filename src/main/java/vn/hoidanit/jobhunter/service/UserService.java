@@ -31,4 +31,17 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public User updateUser(User user) {
+        User userUpdated = findById(user.getId());
+        if (userUpdated != null) {
+            userUpdated.setEmail(user.getEmail());
+            userUpdated.setName(user.getName());
+            userUpdated.setPassword(user.getPassword());
+            return userRepository.save(user);
+        }
+
+        return user;
+
+    }
+
 }
