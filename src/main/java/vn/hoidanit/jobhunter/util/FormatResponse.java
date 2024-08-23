@@ -31,12 +31,15 @@ public class FormatResponse implements ResponseBodyAdvice<Object> {
         HttpServletResponse servletResponse = ((ServletServerHttpResponse) response).getServletResponse();
         int status = servletResponse.getStatus();
 
+        if (body instanceof String) {
+            return body;
+        }
+
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(status);
 
         if (status >= 400) {
-            res.setError((String) ((RestResponse<Object>) body).getError());
-            res.setMessage("Call api fail");
+            return body;
 
         } else {
             res.setData(body);
