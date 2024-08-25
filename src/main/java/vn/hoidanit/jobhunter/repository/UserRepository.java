@@ -9,7 +9,9 @@ import vn.hoidanit.jobhunter.domain.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    @Query(value = "SELECT u FROM User u WHERE u.email = ?1 ")
-    User findUsersByEmail(String email);
+    // @Query(value = "SELECT u FROM User u WHERE u.email = ?1 ")
+    // User findUsersByEmail(String email);
+
+    User findByEmail(String email);
 
 }

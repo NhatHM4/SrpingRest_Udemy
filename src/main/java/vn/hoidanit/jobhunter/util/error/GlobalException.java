@@ -21,13 +21,14 @@ import vn.hoidanit.jobhunter.domain.RestResponse;
 public class GlobalException {
 
     @ExceptionHandler(value = {
-            IdInvalidException.class,
+
             UsernameNotFoundException.class,
             BadCredentialsException.class,
-            UnsupportedOperationException.class
+
     })
-    public ResponseEntity<Object> handleIdException(Exception invalidException) {
+    public ResponseEntity<RestResponse<Object>> handleIdException(Exception invalidException) {
         RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(invalidException.getMessage());
         return ResponseEntity.badRequest().body(res);
     }
