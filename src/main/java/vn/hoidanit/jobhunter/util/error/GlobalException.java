@@ -30,6 +30,7 @@ public class GlobalException {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
         res.setError(invalidException.getMessage());
+        res.setMessage("Exception occurs ... ");
         return ResponseEntity.badRequest().body(res);
     }
 
