@@ -3,10 +3,10 @@ package vn.hoidanit.jobhunter.config;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,11 +19,9 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
-import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
-import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
@@ -47,16 +45,17 @@ public class SecurityConfiguration {
             throws Exception {
         http
                 .csrf(c -> c.disable())
+                .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         (request) -> request.requestMatchers("/", "/login").permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(authenticationEntryPoint))
                 // default exception
-                .exceptionHandling(
-                        exceptions -> exceptions
-                                .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()) // 401
-                                .accessDeniedHandler(new BearerTokenAccessDeniedHandler())) // 403
+                // .exceptionHandling(
+                // exceptions -> exceptions
+                // .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()) // 401
+                // .accessDeniedHandler(new BearerTokenAccessDeniedHandler())) // 403
 
                 .formLogin(f -> f.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
