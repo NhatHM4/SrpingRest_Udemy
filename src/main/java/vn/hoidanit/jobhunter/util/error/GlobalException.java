@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import jakarta.validation.ConstraintViolationException;
 import vn.hoidanit.jobhunter.domain.RestResponse;
 
 @RestControllerAdvice
@@ -34,7 +35,7 @@ public class GlobalException {
         return ResponseEntity.badRequest().body(res);
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler(value = { MethodArgumentNotValidException.class, ConstraintViolationException.class })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
     public ResponseEntity<RestResponse<List<String>>> validationError(MethodArgumentNotValidException ex) {
