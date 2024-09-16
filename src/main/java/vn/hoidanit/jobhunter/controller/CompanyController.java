@@ -1,6 +1,7 @@
 package vn.hoidanit.jobhunter.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.Company;
+import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.CompanyService;
 
 @RestController
@@ -33,9 +36,11 @@ public class CompanyController {
     }
 
     @GetMapping("/companies")
-    public ResponseEntity<List<Company>> getAllCompanies() {
-
-        return ResponseEntity.ok().body(companyService.getAllCompanies());
+    public ResponseEntity<ResultPaginationDTO> getAllCompanies(
+            @RequestParam("current") Optional<String> currentOptional,
+            @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+        ResultPaginationDTO result = companyService.getAllCompanies(currentOptional, pageSizeOptional);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PutMapping("/companies")

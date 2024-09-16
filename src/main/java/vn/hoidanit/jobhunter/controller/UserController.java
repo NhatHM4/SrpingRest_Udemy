@@ -1,6 +1,7 @@
 package vn.hoidanit.jobhunter.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import vn.hoidanit.jobhunter.domain.User;
+import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
 
@@ -57,9 +60,10 @@ public class UserController {
     }
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAllUser() {
-        List<User> listUser = userService.findAllUser();
-        return ResponseEntity.status(HttpStatus.OK).body(listUser);
+    public ResponseEntity<ResultPaginationDTO> getAllUser(@RequestParam("current") Optional<String> currentOptional,
+            @RequestParam("pageSize") Optional<String> pageSizeOptional) {
+        ResultPaginationDTO result = userService.findAllUser(currentOptional, pageSizeOptional);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @PutMapping("/users")
