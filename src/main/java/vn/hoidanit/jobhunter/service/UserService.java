@@ -34,25 +34,20 @@ public class UserService {
         return userRepository.findById(id).get();
     }
 
-    public ResultPaginationDTO findAllUser(Optional<String> currentOptional, Optional<String> pageSizeOptional) {
-        Pageable paging = null;
-        Page<User> pagedResult = null;
+    public ResultPaginationDTO fetchAllUser(Pageable pageable) {
+        Page<User> pageUser = this.userRepository.findAll(pageable);
         ResultPaginationDTO rs = new ResultPaginationDTO();
-        if (currentOptional.isPresent() && pageSizeOptional.isPresent()) {
-            paging = PageRequest.of(Integer.parseInt(currentOptional.get()) - 1,
-                    Integer.parseInt(pageSizeOptional.get()));
-            pagedResult = userRepository.findAll(paging);
-        }
-        if (pagedResult != null && pagedResult.hasContent()) {
-            Meta meta = new Meta();
-            meta.setPage(pagedResult.getNumber() + 1);
-            meta.setPageSize(pagedResult.getSize());
-            meta.setPages(pagedResult.getTotalPages());
-            meta.setTotal(pagedResult.getTotalElements());
-            rs.setMeta(meta);
-            rs.setData(pagedResult.getContent());
-            return rs;
-        }
+        Meta mt = new Meta();
+
+        mt.setPage(pageUser.getNumber() + 1);
+        mt.setPageSize(pageUser.getSize());
+
+        mt.setPages(pageUser.getTotalPages());
+        mt.setTotal(pageUser.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setData(pageUser.getContent());
+
         return rs;
     }
 

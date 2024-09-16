@@ -26,25 +26,19 @@ public class CompanyService {
         return companyRepository.save(company);
     }
 
-    public ResultPaginationDTO getAllCompanies(Optional<String> currentOptional, Optional<String> pageSizeOptional) {
-        Pageable paging = null;
-        Page<Company> pagedResult = null;
+    public ResultPaginationDTO handleGetCompany(Pageable pageable) {
+        Page<Company> pCompany = this.companyRepository.findAll(pageable);
         ResultPaginationDTO rs = new ResultPaginationDTO();
-        if (currentOptional.isPresent() && pageSizeOptional.isPresent()) {
-            paging = PageRequest.of(Integer.parseInt(currentOptional.get()) - 1,
-                    Integer.parseInt(pageSizeOptional.get()));
-            pagedResult = companyRepository.findAll(paging);
-        }
-        if (pagedResult != null && pagedResult.hasContent()) {
-            Meta meta = new Meta();
-            meta.setPage(pagedResult.getNumber() + 1);
-            meta.setPageSize(pagedResult.getSize());
-            meta.setPages(pagedResult.getTotalPages());
-            meta.setTotal(pagedResult.getTotalElements());
-            rs.setMeta(meta);
-            rs.setData(pagedResult.getContent());
-            return rs;
-        }
+        Meta mt = new Meta();
+
+        mt.setPage(pCompany.getNumber() + 1);
+        mt.setPageSize(pCompany.getSize());
+
+        mt.setPages(pCompany.getTotalPages());
+        mt.setTotal(pCompany.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setData(pCompany.getContent());
         return rs;
     }
 
