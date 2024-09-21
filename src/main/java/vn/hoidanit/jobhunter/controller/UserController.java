@@ -37,6 +37,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
+    @ApiMessage("create user")
     public ResponseEntity<Object> createNewUserPost(@RequestBody User user) {
         String hashPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
@@ -61,21 +62,37 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) throws IdInvalidException {
-
-        if (id > 1500) {
-            throw new IdInvalidException(" ID khong lon hon 1500");
+    @ApiMessage("delete user by id")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) throws IdInvalidException {
+        User newUser = userService.findById(id);
+        if (newUser != null) {
+            userService.deleteUser(id);
+            return ResponseEntity.ok(null);
         }
-        userService.deleteUser(id);
-
-        return ResponseEntity.ok("delete successfully");
-        // return ResponseEntity.status(HttpStatus.OK).body("delete successfully");
+        return ResponseEntity.badRequest().body(null);
     }
 
     @GetMapping("/users/{id}")
-    public ResponseEntity<User> getUser(@PathVariable Long id) {
+    @ApiMessage(value = "fetch user by id")
+    public ResponseEntity<Object> getUser(@PathVariable Long id) {
         User newUser = userService.findById(id);
-        return ResponseEntity.status(HttpStatus.OK).body(newUser);
+        if (newUser != null) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(newUser.getId());
+            userDTO.setName(newUser.getName());
+            userDTO.setEmail(newUser.getEmail());
+            userDTO.setGender(newUser.getGender());
+            userDTO.setAge(newUser.getAge());
+            userDTO.setAddress(newUser.getAddress());
+            return ResponseEntity.ok(userDTO);
+        }
+
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setError("ID = '" + id + "' is not exists !!!");
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setMessage(" Exception occurs ... ");
+        return ResponseEntity.badRequest().body(res);
+
     }
 
     @GetMapping("/users")
@@ -86,10 +103,26 @@ public class UserController {
     }
 
     @PutMapping("/users")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+    @ApiMessage("update user")
+    public ResponseEntity<Object> updateUser(@RequestBody User user) {
         User newUser = userService.updateUser(user);
+        if (newUser != null) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setId(newUser.getId());
+            userDTO.setName(newUser.getName());
+            userDTO.setEmail(newUser.getEmail());
+            userDTO.setGender(newUser.getGender());
+            userDTO.setAge(newUser.getAge());
+            userDTO.setAddress(newUser.getAddress());
+            userDTO.setUpdatedAt(newUser.getUpdatedAt());
+            return ResponseEntity.ok(userDTO);
+        }
 
-        return ResponseEntity.status(HttpStatus.OK).body(newUser);
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setError("ID = '" + user.getId() + "' is not exists !!!");
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setMessage(" Exception occurs ... ");
+        return ResponseEntity.badRequest().body(res);
     }
 
 }

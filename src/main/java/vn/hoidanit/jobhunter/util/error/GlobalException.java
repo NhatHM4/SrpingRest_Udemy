@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.validation.ConstraintViolationException;
 import vn.hoidanit.jobhunter.domain.RestResponse;
@@ -22,10 +23,9 @@ import vn.hoidanit.jobhunter.domain.RestResponse;
 public class GlobalException {
 
     @ExceptionHandler(value = {
-
             UsernameNotFoundException.class,
             BadCredentialsException.class,
-
+            IllegalStateException.class,
     })
     public ResponseEntity<RestResponse<Object>> handleIdException(Exception invalidException) {
         RestResponse<Object> res = new RestResponse<Object>();
@@ -33,6 +33,18 @@ public class GlobalException {
         res.setError(invalidException.getMessage());
         res.setMessage("Exception occurs ... ");
         return ResponseEntity.badRequest().body(res);
+    }
+
+    @ExceptionHandler(value = {
+            NoResourceFoundException.class,
+    })
+    public ResponseEntity<RestResponse<Object>> handleNoResourceFoundException(
+            NoResourceFoundException invalidException) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.NOT_FOUND.value());
+        res.setError(invalidException.getMessage());
+        res.setMessage("Exception occurs ... ");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
 
     @ExceptionHandler(value = { MethodArgumentNotValidException.class, ConstraintViolationException.class })

@@ -1,10 +1,10 @@
 package vn.hoidanit.jobhunter.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.Meta;
 import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.dto.UserDTO;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 
 @Service
@@ -36,7 +37,11 @@ public class UserService {
     }
 
     public User findById(Long id) {
-        return userRepository.findById(id).get();
+        Optional<User> userGetById = userRepository.findById(id);
+        if (userGetById.isPresent()) {
+            return userRepository.findById(id).get();
+        }
+        return null;
     }
 
     public ResultPaginationDTO fetchAllUser(Specification<User> spec, Pageable pageable) {
@@ -51,7 +56,19 @@ public class UserService {
         mt.setTotal(pageUser.getTotalElements());
 
         rs.setMeta(mt);
-        rs.setData(pageUser.getContent());
+        List<UserDTO> arrUserdto = new ArrayList<UserDTO>();
+        UserDTO userdto = null;
+        for (User user : pageUser.getContent()) {
+            userdto = new UserDTO();
+            userdto.setId(user.getId());
+            userdto.setEmail(user.getEmail());
+            userdto.setName(user.getName());
+            userdto.setGender(user.getGender());
+            userdto.setAddress(user.getAddress());
+            userdto.setAge(user.getAge());
+            arrUserdto.add(userdto);
+        }
+        rs.setData(arrUserdto);
 
         return rs;
     }
@@ -59,13 +76,26 @@ public class UserService {
     public User updateUser(User user) {
         User userUpdated = findById(user.getId());
         if (userUpdated != null) {
-            userUpdated.setEmail(user.getEmail());
-            userUpdated.setName(user.getName());
-            userUpdated.setPassword(user.getPassword());
-            return userRepository.save(user);
+            if (user.getEmail() != null) {
+                userUpdated.setEmail(user.getEmail());
+            }
+            if (user.getName() != null) {
+                userUpdated.setName(user.getName());
+            }
+            if (user.getGender() != null) {
+                userUpdated.setGender(user.getGender());
+            }
+            if (user.getAge() != 0) {
+                userUpdated.setAge(user.getAge());
+            }
+            if (user.getAddress() != null) {
+                userUpdated.setAddress(user.getAddress());
+            }
+
+            return userRepository.save(userUpdated);
         }
 
-        return user;
+        return userUpdated;
 
     }
 
