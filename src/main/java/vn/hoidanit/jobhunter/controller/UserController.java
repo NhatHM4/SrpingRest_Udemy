@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.turkraft.springfilter.boot.Filter;
 
+import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.domain.RestResponse;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
@@ -38,7 +39,7 @@ public class UserController {
 
     @PostMapping("/users")
     @ApiMessage("create user")
-    public ResponseEntity<Object> createNewUserPost(@RequestBody User user) {
+    public ResponseEntity<Object> createNewUserPost(@Valid @RequestBody User user) {
         String hashPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
         User newUser = userService.createNewUser(user);

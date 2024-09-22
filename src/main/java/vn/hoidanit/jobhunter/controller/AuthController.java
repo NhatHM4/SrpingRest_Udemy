@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.validation.Valid;
+import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.dto.LoginDTO;
 import vn.hoidanit.jobhunter.domain.dto.RestLoginDTO;
+import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
 
 @RestController
@@ -23,9 +25,13 @@ public class AuthController {
 
     private final SecurityUtil securityUtil;
 
-    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil) {
+    private final UserService userService;
+
+    public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder, SecurityUtil securityUtil,
+            UserService userService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -39,6 +45,9 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         RestLoginDTO restLoginDTO = new RestLoginDTO();
         restLoginDTO.setAccessToken(accessToken);
+        User user = userService.getUserByUserName((String) authentication.getName());
+        RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(user.getId(), user.getEmail(), user.getName());
+        restLoginDTO.setUser(userLogin);
         return ResponseEntity.ok().body(restLoginDTO);
     }
 }
