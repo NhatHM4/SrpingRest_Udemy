@@ -103,4 +103,12 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    public void updateRefreshToken(String refreshToken, String email) {
+        User currentUser = userRepository.findByEmail(email);
+        if (currentUser != null) {
+            currentUser.setRefreshTokenString(refreshToken);
+            userRepository.save(currentUser);
+        }
+    }
+
 }

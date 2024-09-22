@@ -43,7 +43,7 @@ public class SecurityUtil {
     @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
     private String refreshTokenExpiration;
 
-    public String createAccessToken(Authentication authentication) {
+    public String createAccessToken(Authentication authentication, UserLogin userLogin) {
         Instant now = Instant.now();
         Instant validity = now.plus(Long.parseLong(accessTokenExpiration), ChronoUnit.SECONDS);
 
@@ -52,7 +52,7 @@ public class SecurityUtil {
         .issuedAt(now)
         .expiresAt(validity)
         .subject(authentication.getName())
-        .claim("hoidanit", authentication)
+        .claim("user", userLogin)
         .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader,claims)).getTokenValue();
