@@ -1,12 +1,18 @@
 package vn.hoidanit.jobhunter.util;
 
-import java.time.*;
-import java.time.temporal.*;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.JwsHeader;
@@ -16,12 +22,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
-import vn.hoidanit.jobhunter.domain.dto.RestLoginDTO;
 import vn.hoidanit.jobhunter.domain.dto.RestLoginDTO.UserLogin;
-
-import java.util.Optional;
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 @Service
 public class SecurityUtil {
@@ -46,13 +47,16 @@ public class SecurityUtil {
     public String createAccessToken(Authentication authentication, UserLogin userLogin) {
         Instant now = Instant.now();
         Instant validity = now.plus(Long.parseLong(accessTokenExpiration), ChronoUnit.SECONDS);
-
+        List<String> listAuthority = new ArrayList<String>();
+        listAuthority.add("ROLE_USER_CREATE");
+        listAuthority.add("ROLE_USER_UPDATE");
         // @formatter:off
         JwtClaimsSet claims = JwtClaimsSet.builder()
         .issuedAt(now)
         .expiresAt(validity)
         .subject(authentication.getName())
         .claim("user", userLogin)
+        .claim("permissions", listAuthority)
         .build();
         JwsHeader jwsHeader = JwsHeader.with(JWT_ALGORITHM).build();
         return this.jwtEncoder.encode(JwtEncoderParameters.from(jwsHeader,claims)).getTokenValue();
