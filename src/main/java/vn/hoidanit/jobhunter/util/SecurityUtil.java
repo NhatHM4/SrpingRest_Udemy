@@ -1,5 +1,8 @@
 package vn.hoidanit.jobhunter.util;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -20,7 +23,10 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Service;
+
+import com.nimbusds.jose.util.Base64;
 
 import vn.hoidanit.jobhunter.domain.dto.RestLoginDTO.UserLogin;
 
@@ -44,7 +50,7 @@ public class SecurityUtil {
     @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
     private String refreshTokenExpiration;
 
-    public String createAccessToken(Authentication authentication, UserLogin userLogin) {
+    public String createAccessToken(String email, UserLogin userLogin) {
         Instant now = Instant.now();
         Instant validity = now.plus(Long.parseLong(accessTokenExpiration), ChronoUnit.SECONDS);
         List<String> listAuthority = new ArrayList<String>();
@@ -54,7 +60,7 @@ public class SecurityUtil {
         JwtClaimsSet claims = JwtClaimsSet.builder()
         .issuedAt(now)
         .expiresAt(validity)
-        .subject(authentication.getName())
+        .subject(email)
         .claim("user", userLogin)
         .claim("permissions", listAuthority)
         .build();
@@ -160,6 +166,22 @@ public class SecurityUtil {
 
     private static Stream<String> getAuthorities(Authentication authentication) {
         return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority);
+    }
+
+    private SecretKey getSecretKey() {
+        byte[] keyBytes = Base64.from(jwtKey).decode();
+        return new SecretKeySpec(keyBytes, 0, keyBytes.length, SecurityUtil.JWT_ALGORITHM.getName());
+    }
+
+    public Jwt decodeToken(String token){
+        NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder.withSecretKey(
+                getSecretKey()).macAlgorithm(SecurityUtil.JWT_ALGORITHM).build();
+                try {
+                    return jwtDecoder.decode(token);
+                } catch (Exception e) {
+                    System.out.println(">>> JWT error: " + e.getMessage());
+                    throw e;
+                }
     }
 
 

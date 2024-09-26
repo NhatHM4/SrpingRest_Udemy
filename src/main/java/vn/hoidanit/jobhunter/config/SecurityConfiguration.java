@@ -47,7 +47,8 @@ public class SecurityConfiguration {
                 .csrf(c -> c.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
-                        (request) -> request.requestMatchers("/", "/api/v1/login").permitAll()
+                        (request) -> request.requestMatchers("/", "/api/v1/auth/login", "/api/v1/auth/refresh")
+                                .permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(authenticationEntryPoint))
