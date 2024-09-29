@@ -134,4 +134,29 @@ public class AuthController {
                                 .body(restLoginDTO);
         }
 
+        @SuppressWarnings("null")
+        @PostMapping("/auth/logout")
+        @ApiMessage("logout user")
+        public ResponseEntity<Void> logout() throws IdInvalidException {
+                String email = SecurityUtil.getCurrentUserLogin().isPresent()
+                                ? SecurityUtil.getCurrentUserLogin().get()
+                                : "";
+                if ("".equals(email)) {
+                        throw new IdInvalidException(" email is not exists !!!");
+                }
+                this.userService.updateRefreshToken(null, email);
+                ResponseCookie deleteSpringCookie = ResponseCookie
+                                .from("refresh_token", null)
+                                .httpOnly(true)
+                                .secure(true)
+                                .path("/")
+                                .maxAge(0)
+                                .build();
+
+                return ResponseEntity
+                                .ok()
+                                .header(HttpHeaders.SET_COOKIE, deleteSpringCookie.toString())
+                                .build();
+        }
+
 }
