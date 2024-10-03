@@ -3,7 +3,6 @@ package vn.hoidanit.jobhunter.config;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,7 +20,6 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
