@@ -24,7 +24,7 @@ import org.springframework.data.jpa.domain.Specification;
 import jakarta.validation.Valid;
 import vn.hoidanit.jobhunter.config.CompanyService;
 import vn.hoidanit.jobhunter.domain.Company;
-import vn.hoidanit.jobhunter.domain.dto.ResultPaginationDTO;
+import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 
 @RestController
