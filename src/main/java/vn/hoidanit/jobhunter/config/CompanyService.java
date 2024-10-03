@@ -1,4 +1,4 @@
-package vn.hoidanit.jobhunter.service;
+package vn.hoidanit.jobhunter.config;
 
 import java.util.List;
 import java.util.Optional;

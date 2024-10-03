@@ -9,6 +9,8 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,10 +25,6 @@ import vn.hoidanit.jobhunter.service.UserService;
 import vn.hoidanit.jobhunter.util.SecurityUtil;
 import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
-
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -83,17 +81,19 @@ public class AuthController {
 
         @GetMapping("/auth/account")
         @ApiMessage("fetch account")
-        public ResponseEntity<UserLogin> getAccount() {
+        public ResponseEntity<RestLoginDTO.UserGetAccount> getAccount() {
                 String userName = SecurityUtil.getCurrentUserLogin().isPresent()
                                 ? SecurityUtil.getCurrentUserLogin().get()
                                 : "";
                 User user = userService.getUserByUserName(userName);
+                RestLoginDTO.UserGetAccount userGetAccount = new RestLoginDTO.UserGetAccount();
                 RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(
                                 user.getId(),
                                 user.getEmail(),
                                 user.getName());
+                userGetAccount.setUser(userLogin);
 
-                return ResponseEntity.ok(userLogin);
+                return ResponseEntity.ok(userGetAccount);
         }
 
         @GetMapping("/auth/refresh")
