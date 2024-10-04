@@ -10,6 +10,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
+import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 @Getter
@@ -21,6 +22,7 @@ public class UserDTO {
     private String email;
     private Long id;
     private int age;
+    private Company company;
 
     @Enumerated(EnumType.STRING)
     private GenderEnum gender;

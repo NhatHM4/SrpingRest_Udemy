@@ -9,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import vn.hoidanit.jobhunter.config.CompanyService;
+import vn.hoidanit.jobhunter.domain.Company;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.domain.response.UserDTO;
@@ -18,12 +20,20 @@ import vn.hoidanit.jobhunter.repository.UserRepository;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final CompanyService companyService;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, CompanyService companyService) {
         this.userRepository = userRepository;
+        this.companyService = companyService;
     }
 
     public User createNewUser(User user) {
+        Company company = companyService.findById(user.getCompany().getId());
+        if (company != null) {
+            user.setCompany(company);
+        } else {
+            user.setCompany(null);
+        }
         Boolean existsByEmail = userRepository.existsByEmail(user.getEmail());
         if (!existsByEmail) {
             return userRepository.save(user);
@@ -65,6 +75,7 @@ public class UserService {
             userdto.setGender(user.getGender());
             userdto.setAddress(user.getAddress());
             userdto.setAge(user.getAge());
+            userdto.setCompany(user.getCompany());
             arrUserdto.add(userdto);
         }
         rs.setData(arrUserdto);
@@ -89,6 +100,9 @@ public class UserService {
             }
             if (user.getAddress() != null) {
                 userUpdated.setAddress(user.getAddress());
+            }
+            if (user.getAddress() != null) {
+                userUpdated.setCompany(user.getCompany());
             }
 
             return userRepository.save(userUpdated);

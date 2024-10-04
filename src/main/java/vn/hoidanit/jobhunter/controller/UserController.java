@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.turkraft.springfilter.boot.Filter;
 
 import jakarta.validation.Valid;
+import vn.hoidanit.jobhunter.config.CompanyService;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.response.RestResponse;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
@@ -52,6 +53,7 @@ public class UserController {
             userDTO.setAge(newUser.getAge());
             userDTO.setAddress(newUser.getAddress());
             userDTO.setCreatedAt(newUser.getCreatedAt());
+            userDTO.setCompany(newUser.getCompany());
             return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
         }
 
@@ -85,6 +87,7 @@ public class UserController {
             userDTO.setGender(newUser.getGender());
             userDTO.setAge(newUser.getAge());
             userDTO.setAddress(newUser.getAddress());
+            userDTO.setCompany(newUser.getCompany());
             return ResponseEntity.ok(userDTO);
         }
 
@@ -116,6 +119,7 @@ public class UserController {
             userDTO.setAge(newUser.getAge());
             userDTO.setAddress(newUser.getAddress());
             userDTO.setUpdatedAt(newUser.getUpdatedAt());
+            userDTO.setCompany(newUser.getCompany());
             return ResponseEntity.ok(userDTO);
         }
 
