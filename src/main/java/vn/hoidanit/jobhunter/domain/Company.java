@@ -53,6 +53,10 @@ public class Company {
     @JsonIgnore
     private List<User> users;
 
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Job> jobs;
+
     @PrePersist
     public void setCreateBy() {
         String username = SecurityUtil.getCurrentUserLogin().get();
