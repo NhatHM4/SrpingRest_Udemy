@@ -1,0 +1,52 @@
+package vn.hoidanit.jobhunter.controller;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import jakarta.validation.Valid;
+import vn.hoidanit.jobhunter.domain.Job;
+import vn.hoidanit.jobhunter.domain.response.JobDTO;
+import vn.hoidanit.jobhunter.service.JobService;
+import vn.hoidanit.jobhunter.util.annotation.ApiMessage;
+import vn.hoidanit.jobhunter.util.error.IdInvalidException;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+
+@RestController
+@RequestMapping("/api/v1")
+public class JobController {
+
+    private final JobService jobService;
+
+    public JobController(JobService jobService) {
+        this.jobService = jobService;
+    }
+
+    @PostMapping("/jobs")
+    @ApiMessage("create job ")
+    public ResponseEntity<JobDTO> createJob(@Valid @RequestBody Job job) throws IdInvalidException {
+        JobDTO jobDTO = jobService.createJob(job);
+        return ResponseEntity.ok(jobDTO);
+    }
+
+    @PutMapping("/jobs")
+    @ApiMessage("update job ")
+    public ResponseEntity<JobDTO> updateJob(@Valid @RequestBody Job job) throws IdInvalidException {
+        JobDTO jobDTO = jobService.updateJob(job);
+        return ResponseEntity.ok(jobDTO);
+    }
+
+    @GetMapping("/jobs/{id}")
+    @ApiMessage("get job by id ")
+    public ResponseEntity<JobDTO> getMethodName(@PathVariable("id") Long id) throws IdInvalidException {
+        JobDTO jobDTO = jobService.findById(id);
+        return ResponseEntity.ok(jobDTO);
+    }
+
+}
