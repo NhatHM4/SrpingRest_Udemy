@@ -66,4 +66,13 @@ public class SkillService {
 
         return skillRepository.findById(id).get();
     }
+
+    public void deleteSkillById(Long id) throws IdInvalidException {
+        Optional<Skill> skillOptional = skillRepository.findById(id);
+        if (!skillRepository.findById(id).isPresent()) {
+            throw new IdInvalidException("skill is not exists !!!");
+        }
+        skillOptional.get().getJobs().stream().forEach(job -> job.getSkills().remove(skillOptional.get()));
+        skillRepository.delete(skillOptional.get());
+    }
 }

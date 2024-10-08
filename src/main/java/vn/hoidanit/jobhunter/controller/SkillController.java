@@ -4,6 +4,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,11 +51,19 @@ public class SkillController {
     }
 
     @GetMapping("/skills/{id}")
-    @ApiMessage(value = "fetch user by id")
-    public ResponseEntity<Skill> getUser(@PathVariable Long id) throws IdInvalidException {
+    @ApiMessage(value = "fetch skill by id")
+    public ResponseEntity<Skill> getSkill(@PathVariable Long id) throws IdInvalidException {
         Skill newSkill = skillService.findById(id);
 
         return ResponseEntity.ok(newSkill);
+
+    }
+
+    @DeleteMapping("/skills/{id}")
+    @ApiMessage(value = "delete skill by id")
+    public ResponseEntity<Void> deleteSkillById(@PathVariable Long id) throws IdInvalidException {
+        skillService.deleteSkillById(id);
+        return ResponseEntity.ok(null);
 
     }
 }
