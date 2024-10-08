@@ -5,11 +5,15 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.Job;
 import vn.hoidanit.jobhunter.domain.Skill;
 import vn.hoidanit.jobhunter.domain.response.JobDTO;
+import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.repository.JobRepository;
 import vn.hoidanit.jobhunter.repository.SkillRepository;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
@@ -163,6 +167,30 @@ public class JobService {
 
         return jobDTO;
 
+    }
+
+    public ResultPaginationDTO handleGetJob(Specification<Job> spec, Pageable pageable) {
+        Page<Job> pJob = this.jobRepository.findAll(spec, pageable);
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+
+        mt.setPages(pJob.getTotalPages());
+        mt.setTotal(pJob.getTotalElements());
+
+        rs.setMeta(mt);
+        rs.setData(pJob.getContent());
+        return rs;
+    }
+
+    public void deleteJobById(long id) throws IdInvalidException {
+        Optional<Job> jobOptional = jobRepository.findById(id);
+        if (!jobOptional.isPresent()) {
+            throw new IdInvalidException("Job id is not exists !!!");
+        }
+        jobRepository.delete(jobOptional.get());
     }
 
 }
