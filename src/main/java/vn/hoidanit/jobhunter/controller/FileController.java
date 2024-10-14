@@ -1,13 +1,16 @@
 package vn.hoidanit.jobhunter.controller;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
 
-import org.apache.tomcat.util.http.fileupload.FileUploadException;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,6 +41,22 @@ public class FileController {
         fileDTO.setFileName(fileName);
         fileDTO.setUploadedAt(Instant.now());
         return ResponseEntity.ok(fileDTO);
+    }
+
+    @GetMapping("/files")
+    public ResponseEntity<Resource> download(@RequestParam(name = "fileName") String fileName,
+            @RequestParam(name = "folder") String folder)
+            throws StorageException, URISyntaxException, FileNotFoundException {
+        if (fileName == null || folder == null) {
+            throw new StorageException(" File not exists !!! ");
+        }
+        long length = fileService.getLengthFile(fileName, folder);
+        InputStreamResource resource = this.fileService.getFile(fileName, folder);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentLength(length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
     }
 
 }
