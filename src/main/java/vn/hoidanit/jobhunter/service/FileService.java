@@ -9,10 +9,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import vn.hoidanit.jobhunter.util.error.StorageException;
 
 @Service
 public class FileService {
@@ -20,12 +24,12 @@ public class FileService {
     @Value("${hoidanit.upload-file.base-path}")
     private String basePath;
 
-    public void saveFile(MultipartFile file, String folder) throws URISyntaxException, IOException {
-        createUploadFolder(basePath + folder);
-        store(file, folder);
+    public String saveFile(MultipartFile file, String folder) throws URISyntaxException, IOException, StorageException {
+        this.createUploadFolder(basePath + folder);
+        return this.store(file, folder);
     }
 
-    public void createUploadFolder(String folder) throws URISyntaxException {
+    private void createUploadFolder(String folder) throws URISyntaxException {
         URI uri = new URI(folder);
         Path path = Paths.get(uri);
         File tmpDir = new File(path.toString());
@@ -41,8 +45,23 @@ public class FileService {
         }
     }
 
-    public void store(MultipartFile file, String folder) throws URISyntaxException,
-            IOException {
+    public String store(MultipartFile file, String folder) throws URISyntaxException,
+            IOException, StorageException {
+
+        if (file == null || file.isEmpty()) {
+            throw new StorageException("File upload is not exists !!!");
+        }
+
+        List<String> allowedMimeTypes = Arrays.asList(
+                "application/pdf",
+                "image/jpeg",
+                "image/png",
+                "application/msword",
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+
+        if (!allowedMimeTypes.contains(file.getContentType())) {
+            throw new StorageException("File upload is not match Content-Type !!!");
+        }
         // create unique filename
         String finalName = System.currentTimeMillis() + "-" + file.getOriginalFilename();
         URI uri = new URI(basePath + folder + "/" + finalName);
@@ -51,6 +70,7 @@ public class FileService {
             Files.copy(inputStream, path,
                     StandardCopyOption.REPLACE_EXISTING);
         }
+        return finalName;
     }
 
 }
