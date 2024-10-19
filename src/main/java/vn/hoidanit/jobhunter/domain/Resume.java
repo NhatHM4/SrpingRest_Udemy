@@ -32,6 +32,7 @@ public class Resume {
     @NotBlank(message = "Please enter your email")
     private String email;
 
+    @NotBlank(message = "Please enter your cv")
     private String url;
 
     @Enumerated(EnumType.STRING)

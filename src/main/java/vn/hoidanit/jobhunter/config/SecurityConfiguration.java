@@ -41,22 +41,18 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationEntryPoint authenticationEntryPoint)
             throws Exception {
+        String[] whiteList = { "/", "/api/v1/auth/login", "/api/v1/auth/refresh", "/storage/**", "/api/v1/companies/**",
+                "/api/v1/jobs/**" };
         http
                 .csrf(c -> c.disable())
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(
                         (request) -> request
-                                .requestMatchers("/", "/api/v1/auth/login", "/api/v1/auth/refresh", "/storage/**")
+                                .requestMatchers(whiteList)
                                 .permitAll()
                                 .anyRequest().authenticated())
                 .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults())
                         .authenticationEntryPoint(authenticationEntryPoint))
-                // default exception
-                // .exceptionHandling(
-                // exceptions -> exceptions
-                // .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint()) // 401
-                // .accessDeniedHandler(new BearerTokenAccessDeniedHandler())) // 403
-
                 .formLogin(f -> f.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
