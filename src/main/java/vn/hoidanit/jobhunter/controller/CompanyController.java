@@ -57,4 +57,10 @@ public class CompanyController {
         return ResponseEntity.ok().body(null);
     }
 
+    @GetMapping("/companies/{id}")
+    public ResponseEntity<Company> getCompany(@PathVariable String id) {
+        Company company = companyService.findById(Long.parseLong(id));
+        return ResponseEntity.ok().body(company);
+    }
+
 }
