@@ -36,7 +36,7 @@ public class FileController {
     @ApiMessage("upload single file")
     public ResponseEntity<ResUploadFileDTO> upload(@RequestParam(name = "file", required = false) MultipartFile file,
             @RequestParam("folder") String folder) throws URISyntaxException, IOException, StorageException {
-        String fileName = fileService.store(file, folder);
+        String fileName = fileService.saveFile(file, folder);
         ResUploadFileDTO fileDTO = new ResUploadFileDTO();
         fileDTO.setFileName(fileName);
         fileDTO.setUploadedAt(Instant.now());

@@ -27,11 +27,11 @@ public class UserService {
     }
 
     public User createNewUser(User user) {
-        Company company = companyService.findById(user.getCompany().getId());
-        if (company != null) {
-            user.setCompany(company);
-        } else {
-            user.setCompany(null);
+        if (user.getCompany() != null) {
+            Company company = companyService.findById(user.getCompany().getId());
+            if (company != null) {
+                user.setCompany(company);
+            }
         }
         Boolean existsByEmail = userRepository.existsByEmail(user.getEmail());
         if (!existsByEmail) {
@@ -75,9 +75,11 @@ public class UserService {
             userdto.setAddress(user.getAddress());
             userdto.setAge(user.getAge());
             userdto.setCompany(user.getCompany());
+            userdto.setCreatedAt(user.getCreatedAt());
+            userdto.setUpdatedAt(user.getUpdatedAt());
             arrUserdto.add(userdto);
         }
-        rs.setData(arrUserdto);
+        rs.setResult(arrUserdto);
 
         return rs;
     }

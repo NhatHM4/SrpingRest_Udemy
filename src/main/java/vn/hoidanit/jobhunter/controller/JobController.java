@@ -62,7 +62,7 @@ public class JobController {
     }
 
     @DeleteMapping("/jobs/{id}")
-    @ApiMessage("get job by id ")
+    @ApiMessage("delete job by id ")
     public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) throws IdInvalidException {
         jobService.deleteJobById(id);
         return ResponseEntity.ok().body(null);

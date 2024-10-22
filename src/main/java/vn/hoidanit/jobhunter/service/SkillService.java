@@ -55,7 +55,7 @@ public class SkillService {
         mt.setTotal(pCompany.getTotalElements());
 
         rs.setMeta(mt);
-        rs.setData(pCompany.getContent());
+        rs.setResult(pCompany.getContent());
         return rs;
     }
 

@@ -55,7 +55,7 @@ public class User {
     private List<Resume> resumes;
 
     @ManyToOne
-    @JoinColumn(name = "company_id")
+    @JoinColumn(name = "company_id", nullable = true)
     private Company company;
 
     @PrePersist

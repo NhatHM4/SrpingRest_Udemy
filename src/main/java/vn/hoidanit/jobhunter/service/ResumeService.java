@@ -140,7 +140,7 @@ public class ResumeService {
                         new UserDTO(resume.getUser().getId(), resume.getUser().getEmail()),
                         new JobDTO(resume.getJob().getId(), resume.getJob().getName())))
                 .collect(Collectors.toList());
-        rs.setData(listResumeConverted);
+        rs.setResult(listResumeConverted);
         return rs;
     }
 

@@ -58,7 +58,8 @@ public class JobService {
                     newJob.getUpdatedAt(),
                     newJob.getCreatedBy(),
                     newJob.getUpdatedBy(),
-                    listNameSkill);
+                    newJob.getSkills(),
+                    newJob.getCompany());
         }
 
         return jobDTO;
@@ -129,7 +130,8 @@ public class JobService {
                     updateJob.getUpdatedAt(),
                     updateJob.getCreatedBy(),
                     updateJob.getUpdatedBy(),
-                    listNameSkill);
+                    updateJob.getSkills(),
+                    updateJob.getCompany());
         }
 
         return jobDTO;
@@ -143,10 +145,10 @@ public class JobService {
         }
         JobDTO jobDTO = null;
         if (jobOptional.isPresent()) {
-            List<String> listSkillContainsInDB = jobOptional.get().getSkills().stream()
-                    .map(skill -> skillRepository.findNameBySkillId(skill.getId()))
-                    .filter(skill -> skill != null)
-                    .collect(Collectors.toList());
+            // List<String> listSkillContainsInDB = jobOptional.get().getSkills().stream()
+            // .map(skill -> skillRepository.findNameBySkillId(skill.getId()))
+            // .filter(skill -> skill != null)
+            // .collect(Collectors.toList());
 
             jobDTO = new JobDTO(jobOptional.get().getId(),
                     jobOptional.get().getName(),
@@ -162,7 +164,8 @@ public class JobService {
                     jobOptional.get().getUpdatedAt(),
                     jobOptional.get().getCreatedBy(),
                     jobOptional.get().getUpdatedBy(),
-                    listSkillContainsInDB);
+                    jobOptional.get().getSkills(),
+                    jobOptional.get().getCompany());
         }
 
         return jobDTO;
@@ -181,7 +184,7 @@ public class JobService {
         mt.setTotal(pJob.getTotalElements());
 
         rs.setMeta(mt);
-        rs.setData(pJob.getContent());
+        rs.setResult(pJob.getContent());
         return rs;
     }
 
