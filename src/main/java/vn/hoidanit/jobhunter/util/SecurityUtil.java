@@ -184,5 +184,12 @@ public class SecurityUtil {
                 }
     }
 
+    public static boolean isNotBlank(String value) {
+        if (value == null || "".equals(value)) {
+            return false;
+        }
+        return true;
+    }
+
 
 }
