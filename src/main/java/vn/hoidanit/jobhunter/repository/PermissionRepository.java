@@ -13,5 +13,7 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
 
     boolean existsByNameAndApiPathAndMethod(String name, String apiPath, String method);
 
+    boolean existsByNameAndApiPathAndMethodAndIdNot(String name, String apiPath, String method, Long id);
+
     Page<Permission> findAll(Specification<Permission> spec, Pageable pageable);
 }

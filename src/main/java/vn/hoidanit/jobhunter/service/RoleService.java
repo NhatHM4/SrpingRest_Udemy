@@ -57,7 +57,7 @@ public class RoleService {
             throw new IdInvalidException(" Role id is not exists !!!");
         }
 
-        if (roleRepository.existsByName(role.getName())) {
+        if (roleRepository.existsByNameAndIdNot(role.getName(), role.getId())) {
             throw new IdInvalidException(" Role's name  is exists !!!");
         }
 
