@@ -52,7 +52,9 @@ public class UserController {
             userDTO.setAge(newUser.getAge());
             userDTO.setAddress(newUser.getAddress());
             userDTO.setCreatedAt(newUser.getCreatedAt());
+            userDTO.setCreatedBy(newUser.getCreatedBy());
             userDTO.setCompany(newUser.getCompany());
+            userDTO.setRole(newUser.getRole());
             return ResponseEntity.status(HttpStatus.CREATED).body(userDTO);
         }
 
@@ -87,6 +89,7 @@ public class UserController {
             userDTO.setAge(newUser.getAge());
             userDTO.setAddress(newUser.getAddress());
             userDTO.setCompany(newUser.getCompany());
+            userDTO.setRole(newUser.getRole());
             return ResponseEntity.ok(userDTO);
         }
 
@@ -118,7 +121,9 @@ public class UserController {
             userDTO.setAge(newUser.getAge());
             userDTO.setAddress(newUser.getAddress());
             userDTO.setUpdatedAt(newUser.getUpdatedAt());
+            userDTO.setUpdatedBy(newUser.getUpdatedBy());
             userDTO.setCompany(newUser.getCompany());
+            userDTO.setRole(newUser.getRole());
             return ResponseEntity.ok(userDTO);
         }
 

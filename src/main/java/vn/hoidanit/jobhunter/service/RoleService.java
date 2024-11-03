@@ -57,10 +57,6 @@ public class RoleService {
             throw new IdInvalidException(" Role id is not exists !!!");
         }
 
-        if (roleRepository.existsByNameAndIdNot(role.getName(), role.getId())) {
-            throw new IdInvalidException(" Role's name  is exists !!!");
-        }
-
         if (role.getPermissions() != null && role.getPermissions().size() > 0) {
             List<Permission> listPermission = role.getPermissions().stream()
                     .map(permission -> permissionRepository.findById(permission.getId()).isPresent()

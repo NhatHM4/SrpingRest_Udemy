@@ -1,14 +1,22 @@
 package vn.hoidanit.jobhunter.service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import com.turkraft.springfilter.converter.FilterSpecification;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+import com.turkraft.springfilter.parser.FilterParser;
+import com.turkraft.springfilter.parser.node.FilterNode;
 
 import vn.hoidanit.jobhunter.domain.Job;
 import vn.hoidanit.jobhunter.domain.Resume;
@@ -20,6 +28,7 @@ import vn.hoidanit.jobhunter.domain.response.ResumeDTO.JobDTO;
 import vn.hoidanit.jobhunter.repository.JobRepository;
 import vn.hoidanit.jobhunter.repository.ResumeRepository;
 import vn.hoidanit.jobhunter.repository.UserRepository;
+import vn.hoidanit.jobhunter.util.SecurityUtil;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
 
 @Service
@@ -30,6 +39,12 @@ public class ResumeService {
     private final UserRepository userRepository;
 
     private final JobRepository jobRepository;
+
+    @Autowired
+    private FilterParser filterParser;
+
+    @Autowired
+    private FilterSpecificationConverter filterSpecificationConverter;
 
     private ResumeService(ResumeRepository resumeRepository, UserRepository userRepository,
             JobRepository jobRepository) {
@@ -119,6 +134,41 @@ public class ResumeService {
 
     public ResultPaginationDTO handleGetAllResume(Specification<Resume> spec, Pageable pageable) {
         Page<Resume> pResume = this.resumeRepository.findAll(spec, pageable);
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+
+        mt.setPages(pResume.getTotalPages());
+        mt.setTotal(pResume.getTotalElements());
+
+        rs.setMeta(mt);
+
+        List<ResumeDTO> listResumeConverted = pResume.getContent().stream()
+                .map(resume -> new ResumeDTO(resume.getId(), resume.getEmail(),
+                        resume.getUrl(),
+                        resume.getStatus(), resume.getCreatedAt(),
+                        resume.getUpdatedAt(),
+                        resume.getCreatedBy(),
+                        resume.getUpdatedBy(),
+                        new UserDTO(resume.getUser().getId(), resume.getUser().getEmail()),
+                        new JobDTO(resume.getJob().getId(), resume.getJob().getName())))
+                .collect(Collectors.toList());
+        rs.setResult(listResumeConverted);
+        return rs;
+    }
+
+    public ResultPaginationDTO fetchResumeByUser(Pageable pageable) {
+
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+
+        FilterNode node = filterParser.parse("email='" + email + "'");
+        FilterSpecification<Resume> spec = filterSpecificationConverter.convert(node);
+        Page<Resume> pResume = this.resumeRepository.findAll(spec, pageable);
+
         ResultPaginationDTO rs = new ResultPaginationDTO();
         ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
 

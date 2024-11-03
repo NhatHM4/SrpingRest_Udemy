@@ -69,4 +69,10 @@ public class ResumeController {
         return ResponseEntity.ok(resultPaginationDTO);
     }
 
+    @PostMapping("/resumes/by-user")
+    @ApiMessage("create resume")
+    public ResponseEntity<ResultPaginationDTO> getapi(Pageable pageable) throws IdInvalidException {
+        return ResponseEntity.ok().body(resumeService.fetchResumeByUser(pageable));
+    }
+
 }

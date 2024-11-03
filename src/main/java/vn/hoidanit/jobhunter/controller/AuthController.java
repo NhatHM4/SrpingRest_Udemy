@@ -56,15 +56,23 @@ public class AuthController {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 RestLoginDTO restLoginDTO = new RestLoginDTO();
                 User user = userService.getUserByUserName((String) authentication.getName());
-                RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(
+                // create user inside token
+                RestLoginDTO.UserInsideToken userInsideToken = new RestLoginDTO.UserInsideToken(
                                 user.getId(),
                                 user.getEmail(),
                                 user.getName());
+
+                RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(
+                                user.getId(),
+                                user.getEmail(),
+                                user.getName(),
+                                user.getRole());
                 restLoginDTO.setUser(userLogin);
                 // create a token
-                String accessToken = this.securityUtil.createAccessToken(user.getEmail(), restLoginDTO.getUser());
+                String accessToken = this.securityUtil.createAccessToken(user.getEmail(), userInsideToken);
                 restLoginDTO.setAccessToken(accessToken);
-                String refreshToken = this.securityUtil.createRefreshToken(user.getEmail(), userLogin);
+
+                String refreshToken = this.securityUtil.createRefreshToken(user.getEmail(), userInsideToken);
                 this.userService.updateRefreshToken(refreshToken, user.getEmail());
                 ResponseCookie responseCookie = ResponseCookie.from("refresh_token", refreshToken)
                                 .httpOnly(true)
@@ -89,7 +97,8 @@ public class AuthController {
                 RestLoginDTO.UserLogin userLogin = new RestLoginDTO.UserLogin(
                                 user.getId(),
                                 user.getEmail(),
-                                user.getName());
+                                user.getName(),
+                                user.getRole());
                 userGetAccount.setUser(userLogin);
 
                 return ResponseEntity.ok(userGetAccount);
@@ -114,12 +123,19 @@ public class AuthController {
                 userLogin = new RestLoginDTO.UserLogin(
                                 currentUser.getId(),
                                 currentUser.getEmail(),
-                                currentUser.getName());
+                                currentUser.getName(),
+                                currentUser.getRole());
                 restLoginDTO.setUser(userLogin);
+                // create user inside token
+                RestLoginDTO.UserInsideToken userInsideToken = new RestLoginDTO.UserInsideToken(
+                                currentUser.getId(),
+                                currentUser.getEmail(),
+                                currentUser.getName());
                 // create a token
-                String accessToken = this.securityUtil.createAccessToken(email, restLoginDTO.getUser());
+                String accessToken = this.securityUtil.createAccessToken(email, userInsideToken);
                 restLoginDTO.setAccessToken(accessToken);
-                String refreshToken = this.securityUtil.createRefreshToken(email, userLogin);
+
+                String refreshToken = this.securityUtil.createRefreshToken(email, userInsideToken);
                 this.userService.updateRefreshToken(refreshToken, email);
                 ResponseCookie responseCookie = ResponseCookie.from("refresh_token", refreshToken)
                                 .httpOnly(true)

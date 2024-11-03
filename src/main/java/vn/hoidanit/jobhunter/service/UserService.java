@@ -10,9 +10,11 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.Company;
+import vn.hoidanit.jobhunter.domain.Role;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.domain.response.UserDTO;
+import vn.hoidanit.jobhunter.repository.RoleRepository;
 import vn.hoidanit.jobhunter.repository.UserRepository;
 
 @Service
@@ -20,10 +22,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final CompanyService companyService;
+    private final RoleRepository roleRepository;
 
-    public UserService(UserRepository userRepository, CompanyService companyService) {
+    public UserService(UserRepository userRepository, CompanyService companyService, RoleRepository roleRepository) {
         this.userRepository = userRepository;
         this.companyService = companyService;
+        this.roleRepository = roleRepository;
     }
 
     public User createNewUser(User user) {
@@ -31,8 +35,20 @@ public class UserService {
             Company company = companyService.findById(user.getCompany().getId());
             if (company != null) {
                 user.setCompany(company);
+            } else {
+                user.setCompany(null);
             }
         }
+
+        if (user.getRole() != null) {
+            Optional<Role> roleOptional = roleRepository.findById(user.getRole().getId());
+            if (roleOptional.isPresent()) {
+                user.setRole(roleOptional.get());
+            } else {
+                user.setRole(null);
+            }
+        }
+
         Boolean existsByEmail = userRepository.existsByEmail(user.getEmail());
         if (!existsByEmail) {
             return userRepository.save(user);
@@ -102,14 +118,28 @@ public class UserService {
             if (user.getAddress() != null) {
                 userUpdated.setAddress(user.getAddress());
             }
-            if (user.getAddress() != null) {
-                userUpdated.setCompany(user.getCompany());
+            if (user.getCompany() != null) {
+                Company company = companyService.findById(user.getCompany().getId());
+                if (company != null) {
+                    userUpdated.setCompany(company);
+                } else {
+                    userUpdated.setCompany(null);
+                }
+            }
+
+            if (user.getRole() != null) {
+                Optional<Role> roleOptional = roleRepository.findById(user.getRole().getId());
+                if (roleOptional.isPresent()) {
+                    userUpdated.setRole(roleOptional.get());
+                } else {
+                    userUpdated.setRole(null);
+                }
             }
 
             return userRepository.save(userUpdated);
         }
 
-        return userUpdated;
+        return null;
 
     }
 

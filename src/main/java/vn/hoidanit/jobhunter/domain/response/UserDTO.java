@@ -11,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.Setter;
 import vn.hoidanit.jobhunter.domain.Company;
+import vn.hoidanit.jobhunter.domain.Role;
 import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 @Getter
@@ -23,14 +24,15 @@ public class UserDTO {
     private Long id;
     private int age;
     private Company company;
+    private Role role;
 
     @Enumerated(EnumType.STRING)
     private GenderEnum gender;
     private String address;
     private String refreshTokenString;
-    // @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss a", timezone = "GMT+7")
     private Instant createdAt;
-    // @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss a", timezone = "GMT+7")
     private Instant updatedAt;
+    private String createdBy;
+    private String updatedBy;
 
 }

@@ -22,6 +22,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
+import vn.hoidanit.jobhunter.util.SecurityUtil;
 import vn.hoidanit.jobhunter.util.constant.GenderEnum;
 
 @Entity
@@ -58,14 +59,26 @@ public class User {
     @JoinColumn(name = "company_id", nullable = true)
     private Company company;
 
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
     @PrePersist
-    public void setCreateBy() {
-        this.setCreatedAt(Instant.now());
+    public void handleBeforeCreate() {
+        this.createdBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+
+        this.createdAt = Instant.now();
     }
 
     @PreUpdate
-    public void setBeforeUpdate() {
-        this.setUpdatedAt(Instant.now());
+    public void handleBeforeUpdate() {
+        this.updatedBy = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+
+        this.updatedAt = Instant.now();
     }
 
 }

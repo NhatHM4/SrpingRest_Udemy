@@ -1,8 +1,5 @@
 package vn.hoidanit.jobhunter.util;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -10,6 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
@@ -28,7 +28,7 @@ import org.springframework.stereotype.Service;
 
 import com.nimbusds.jose.util.Base64;
 
-import vn.hoidanit.jobhunter.domain.response.RestLoginDTO.UserLogin;
+import vn.hoidanit.jobhunter.domain.response.RestLoginDTO.UserInsideToken;
 
 @Service
 public class SecurityUtil {
@@ -50,7 +50,7 @@ public class SecurityUtil {
     @Value("${hoidanit.jwt.refresh-token-validity-in-seconds}")
     private String refreshTokenExpiration;
 
-    public String createAccessToken(String email, UserLogin userLogin) {
+    public String createAccessToken(String email, UserInsideToken userLogin) {
         Instant now = Instant.now();
         Instant validity = now.plus(Long.parseLong(accessTokenExpiration), ChronoUnit.SECONDS);
         List<String> listAuthority = new ArrayList<String>();
@@ -69,7 +69,7 @@ public class SecurityUtil {
             
     }
 
-    public String createRefreshToken(String email, UserLogin userLogin) {
+    public String createRefreshToken(String email, UserInsideToken userLogin) {
         Instant now = Instant.now();
         Instant validity = now.plus(Long.parseLong(refreshTokenExpiration), ChronoUnit.SECONDS);
 
