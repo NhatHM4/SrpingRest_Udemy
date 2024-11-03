@@ -1,10 +1,7 @@
 package vn.hoidanit.jobhunter.service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.turkraft.springfilter.converter.FilterSpecification;
 import com.turkraft.springfilter.converter.FilterSpecificationConverter;
 import com.turkraft.springfilter.parser.FilterParser;
+import com.turkraft.springfilter.parser.ParseContextImpl;
 import com.turkraft.springfilter.parser.node.FilterNode;
 
 import vn.hoidanit.jobhunter.domain.Job;
@@ -23,8 +21,8 @@ import vn.hoidanit.jobhunter.domain.Resume;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.domain.response.ResumeDTO;
-import vn.hoidanit.jobhunter.domain.response.ResumeDTO.UserDTO;
 import vn.hoidanit.jobhunter.domain.response.ResumeDTO.JobDTO;
+import vn.hoidanit.jobhunter.domain.response.ResumeDTO.UserDTO;
 import vn.hoidanit.jobhunter.repository.JobRepository;
 import vn.hoidanit.jobhunter.repository.ResumeRepository;
 import vn.hoidanit.jobhunter.repository.UserRepository;
@@ -165,7 +163,10 @@ public class ResumeService {
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
 
-        FilterNode node = filterParser.parse("email='" + email + "'");
+        @SuppressWarnings("deprecation")
+        // FilterNode node = filterParser.parse("email='" + email + "' and age = 0", new
+        // ParseContextImpl(this::getPath));
+        FilterNode node = filterParser.parse("email='" + email + "'", new ParseContextImpl(this::getPath));
         FilterSpecification<Resume> spec = filterSpecificationConverter.convert(node);
         Page<Resume> pResume = this.resumeRepository.findAll(spec, pageable);
 
@@ -192,6 +193,15 @@ public class ResumeService {
                 .collect(Collectors.toList());
         rs.setResult(listResumeConverted);
         return rs;
+    }
+
+    private String getPath(String daoPath) {
+        return switch (daoPath) {
+            case "age" -> "user.age";
+            case "city" -> "user.city";
+            case "street" -> "user.street";
+            default -> daoPath;
+        };
     }
 
 }
