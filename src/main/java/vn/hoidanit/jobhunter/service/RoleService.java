@@ -102,4 +102,13 @@ public class RoleService {
         roleRepository.deleteById(id);
     }
 
+    public Role findRoleById(Long id) throws IdInvalidException {
+        Optional<Role> roleOptional = roleRepository.findById(id);
+        if (!roleOptional.isPresent()) {
+            throw new IdInvalidException(" Role id is not exists !!!");
+        }
+
+        return roleOptional.get();
+    }
+
 }

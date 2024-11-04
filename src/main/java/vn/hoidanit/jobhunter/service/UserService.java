@@ -93,6 +93,8 @@ public class UserService {
             userdto.setCompany(user.getCompany());
             userdto.setCreatedAt(user.getCreatedAt());
             userdto.setUpdatedAt(user.getUpdatedAt());
+            userdto.setRole(user.getRole());
+
             arrUserdto.add(userdto);
         }
         rs.setResult(arrUserdto);

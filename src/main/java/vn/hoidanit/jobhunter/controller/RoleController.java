@@ -20,6 +20,7 @@ import vn.hoidanit.jobhunter.domain.Role;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.service.RoleService;
 import vn.hoidanit.jobhunter.util.error.IdInvalidException;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -55,6 +56,12 @@ public class RoleController {
     public ResponseEntity<Void> deleteRole(@PathVariable("id") String id) throws IdInvalidException {
         roleService.deleteRole(Long.parseLong(id));
         return ResponseEntity.ok(null);
+    }
+
+    @GetMapping("/roles/{id}")
+    public ResponseEntity<Role> getRoleById(@PathVariable String id) throws NumberFormatException, IdInvalidException {
+        Role role = roleService.findRoleById(Long.parseLong(id));
+        return ResponseEntity.ok(role);
     }
 
 }
