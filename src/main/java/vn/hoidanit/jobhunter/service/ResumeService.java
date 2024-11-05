@@ -21,6 +21,7 @@ import vn.hoidanit.jobhunter.domain.Resume;
 import vn.hoidanit.jobhunter.domain.User;
 import vn.hoidanit.jobhunter.domain.response.ResultPaginationDTO;
 import vn.hoidanit.jobhunter.domain.response.ResumeDTO;
+import vn.hoidanit.jobhunter.domain.response.ResumeDTO.CompanyDTO;
 import vn.hoidanit.jobhunter.domain.response.ResumeDTO.JobDTO;
 import vn.hoidanit.jobhunter.domain.response.ResumeDTO.UserDTO;
 import vn.hoidanit.jobhunter.repository.JobRepository;
@@ -70,13 +71,16 @@ public class ResumeService {
         Resume newResume = resumeRepository.save(resume);
         UserDTO userDTO = new UserDTO(newResume.getUser().getId(), newResume.getUser().getEmail());
         JobDTO jobDTO = new JobDTO(newResume.getJob().getId(), newResume.getJob().getName());
+        CompanyDTO comDTO = new CompanyDTO(resume.getJob().getCompany().getId(), resume.getJob().getCompany().getName(),
+                resume.getJob().getCompany().getLogo());
         ResumeDTO resumeDTO = new ResumeDTO(newResume.getId(), newResume.getEmail(), newResume.getUrl(),
                 newResume.getStatus(), newResume.getCreatedAt(),
                 newResume.getUpdatedAt(),
                 newResume.getCreatedBy(),
                 newResume.getUpdatedBy(),
                 userDTO,
-                jobDTO);
+                jobDTO,
+                comDTO);
 
         return resumeDTO;
     }
@@ -92,13 +96,16 @@ public class ResumeService {
         Resume newResume = resumeRepository.save(resumeOptional.get());
         UserDTO userDTO = new UserDTO(newResume.getUser().getId(), newResume.getUser().getEmail());
         JobDTO jobDTO = new JobDTO(newResume.getJob().getId(), newResume.getJob().getName());
+        CompanyDTO comDTO = new CompanyDTO(resume.getJob().getCompany().getId(), resume.getJob().getCompany().getName(),
+                resume.getJob().getCompany().getLogo());
         ResumeDTO resumeDTO = new ResumeDTO(newResume.getId(), newResume.getEmail(), newResume.getUrl(),
                 newResume.getStatus(), newResume.getCreatedAt(),
                 newResume.getUpdatedAt(),
                 newResume.getCreatedBy(),
                 newResume.getUpdatedBy(),
                 userDTO,
-                jobDTO);
+                jobDTO,
+                comDTO);
         return resumeDTO;
 
     }
@@ -119,6 +126,9 @@ public class ResumeService {
         UserDTO userDTO = new UserDTO(resumeOptional.get().getUser().getId(),
                 resumeOptional.get().getUser().getEmail());
         JobDTO jobDTO = new JobDTO(resumeOptional.get().getJob().getId(), resumeOptional.get().getJob().getName());
+        CompanyDTO comDTO = new CompanyDTO(resumeOptional.get().getJob().getCompany().getId(),
+                resumeOptional.get().getJob().getCompany().getName(),
+                resumeOptional.get().getJob().getCompany().getLogo());
         ResumeDTO resumeDTO = new ResumeDTO(resumeOptional.get().getId(), resumeOptional.get().getEmail(),
                 resumeOptional.get().getUrl(),
                 resumeOptional.get().getStatus(), resumeOptional.get().getCreatedAt(),
@@ -126,11 +136,27 @@ public class ResumeService {
                 resumeOptional.get().getCreatedBy(),
                 resumeOptional.get().getUpdatedBy(),
                 userDTO,
-                jobDTO);
+                jobDTO,
+                comDTO);
         return resumeDTO;
     }
 
+    @SuppressWarnings("deprecation")
     public ResultPaginationDTO handleGetAllResume(Specification<Resume> spec, Pageable pageable) {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        User userFromDB = userRepository.findByEmail(email);
+        StringBuilder filter = null;
+        if (userFromDB.getCompany() != null) {
+            filter = new StringBuilder().append(" job in "
+                    + userFromDB.getCompany().getJobs().stream().map(job -> job.getId())
+                            .collect(Collectors.toList()));
+            FilterNode node = filterParser.parse(filter.toString(), new ParseContextImpl(this::getPath));
+            FilterSpecification<Resume> specFindByJob = filterSpecificationConverter.convert(node);
+            spec = spec.and(specFindByJob);
+        }
+
         Page<Resume> pResume = this.resumeRepository.findAll(spec, pageable);
         ResultPaginationDTO rs = new ResultPaginationDTO();
         ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
@@ -151,7 +177,9 @@ public class ResumeService {
                         resume.getCreatedBy(),
                         resume.getUpdatedBy(),
                         new UserDTO(resume.getUser().getId(), resume.getUser().getEmail()),
-                        new JobDTO(resume.getJob().getId(), resume.getJob().getName())))
+                        new JobDTO(resume.getJob().getId(), resume.getJob().getName()),
+                        new CompanyDTO(resume.getJob().getCompany().getId(), resume.getJob().getCompany().getName(),
+                                resume.getJob().getCompany().getLogo())))
                 .collect(Collectors.toList());
         rs.setResult(listResumeConverted);
         return rs;
@@ -189,7 +217,9 @@ public class ResumeService {
                         resume.getCreatedBy(),
                         resume.getUpdatedBy(),
                         new UserDTO(resume.getUser().getId(), resume.getUser().getEmail()),
-                        new JobDTO(resume.getJob().getId(), resume.getJob().getName())))
+                        new JobDTO(resume.getJob().getId(), resume.getJob().getName()),
+                        new CompanyDTO(resume.getJob().getCompany().getId(), resume.getJob().getCompany().getName(),
+                                resume.getJob().getCompany().getLogo())))
                 .collect(Collectors.toList());
         rs.setResult(listResumeConverted);
         return rs;
@@ -198,7 +228,7 @@ public class ResumeService {
     private String getPath(String daoPath) {
         return switch (daoPath) {
             case "age" -> "user.age";
-            case "city" -> "user.city";
+            case "job" -> "job";
             case "street" -> "user.street";
             default -> daoPath;
         };

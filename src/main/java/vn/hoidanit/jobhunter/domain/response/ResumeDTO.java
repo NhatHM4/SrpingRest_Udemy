@@ -33,6 +33,7 @@ public class ResumeDTO {
     private UserDTO user;
 
     private JobDTO job;
+    private CompanyDTO company;
 
     @Getter
     @Setter
@@ -52,5 +53,17 @@ public class ResumeDTO {
         private long id;
 
         private String name;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class CompanyDTO {
+        private long id;
+
+        private String name;
+
+        private String logo;
     }
 }
