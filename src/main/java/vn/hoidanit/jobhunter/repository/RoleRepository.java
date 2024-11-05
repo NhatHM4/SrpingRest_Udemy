@@ -23,4 +23,6 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
     @Query("SELECT r FROM Role r JOIN r.permissions p WHERE p IN :permissions")
     List<Role> findRoleInPermission(List<Permission> permissions);
 
+    Role findByName(String name);
+
 }
