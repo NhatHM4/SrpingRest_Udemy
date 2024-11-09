@@ -1,21 +1,19 @@
 package vn.hoidanit.jobhunter.service;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import vn.hoidanit.jobhunter.domain.Job;
-import vn.hoidanit.jobhunter.domain.Subscriber;
 import vn.hoidanit.jobhunter.repository.JobRepository;
 import vn.hoidanit.jobhunter.repository.SubscriberRepository;
 
@@ -28,16 +26,12 @@ public class EmailService {
 
     private final SpringTemplateEngine templateEngine;
 
-    private final JobRepository jobRepository;
-    private final SubscriberRepository subscriberRepository;
-
     public EmailService(MailSender mailSender, JavaMailSender javaMailSender, SpringTemplateEngine templateEngine,
             JobRepository jobRepository, SubscriberRepository subscriberRepository) {
         this.mailSender = mailSender;
         this.javaMailSender = javaMailSender;
         this.templateEngine = templateEngine;
-        this.jobRepository = jobRepository;
-        this.subscriberRepository = subscriberRepository;
+
     }
 
     public void sendSimpleMail() {
@@ -64,26 +58,20 @@ public class EmailService {
         }
     }
 
-    public void sendEmailFromTemplateSync(String to, String subject, String templateName, String username,
-            Object jobs) {
+    @Async
+    public void sendEmailFromTemplateSync(
+            String to,
+            String subject,
+            String templateName,
+            String username,
+            Object value) {
+
         Context context = new Context();
-        context.setVariable("name1", username);
-        context.setVariable("jobs", jobs);
-        String content = this.templateEngine.process(templateName, context);
+        context.setVariable("name", username);
+        context.setVariable("jobs", value);
+
+        String content = templateEngine.process(templateName, context);
         this.sendEmailSync(to, subject, content, false, true);
     }
 
-    public void sendSubscribersEmailJobs() {
-        List<Subscriber> subscribers = this.subscriberRepository.findAll();
-        if (subscribers != null && subscribers.size() > 0)
-            for (Subscriber subscriber : subscribers) {
-                if (subscriber.getSkills() != null && subscriber.getSkills().size() > 0) {
-                    List<Job> jobs = this.jobRepository.findBySkillsIn(subscriber.getSkills());
-                    if (jobs != null && jobs.size() > 0) {
-                        sendEmailFromTemplateSync(subscriber.getEmail(), "Cơ hội việc làm hot đang chờ đón bạn", "job",
-                                subscriber.getName(), jobs);
-                    }
-                }
-            }
-    }
 }
