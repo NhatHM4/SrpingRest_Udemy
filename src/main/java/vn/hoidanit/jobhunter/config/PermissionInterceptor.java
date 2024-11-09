@@ -32,7 +32,7 @@ public class PermissionInterceptor implements HandlerInterceptor {
         String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
-        if (email != null && !"".equals(email)) {
+        if (email != null && !"".equals(email) && !"anonymousUser".equals(email)) {
             User user = this.userService.getUserByUserName(email);
             if (user.getRole() != null && user.getRole().getPermissions() != null
                     && user.getRole().getPermissions().size() > 0) {
