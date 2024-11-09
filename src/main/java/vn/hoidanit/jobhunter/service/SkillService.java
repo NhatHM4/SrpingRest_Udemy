@@ -73,6 +73,7 @@ public class SkillService {
             throw new IdInvalidException("skill is not exists !!!");
         }
         skillOptional.get().getJobs().stream().forEach(job -> job.getSkills().remove(skillOptional.get()));
+        skillOptional.get().getSubscribers().stream().forEach(sub -> sub.getSkills().remove(skillOptional.get()));
         skillRepository.delete(skillOptional.get());
     }
 }
