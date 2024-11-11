@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import vn.hoidanit.jobhunter.domain.Subscriber;
@@ -116,6 +117,14 @@ public class SubscriberService {
                 .collect(Collectors.toList());
         res.setSkills(s);
         return res;
+    }
+
+    // public void testCron() {
+    // System.out.println(" HA MINH NHAT ....>>>>>> test ");
+    // }
+
+    public Subscriber findByEmail(String email) {
+        return subscriberRepository.findByEmail(email);
     }
 
 }

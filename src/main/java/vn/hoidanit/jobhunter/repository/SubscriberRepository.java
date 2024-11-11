@@ -12,4 +12,6 @@ public interface SubscriberRepository extends JpaRepository<Subscriber, Long> {
 
     boolean existsByEmailAndIdNot(String email, Long id);
 
+    Subscriber findByEmail(String email);
+
 }

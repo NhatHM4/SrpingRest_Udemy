@@ -31,8 +31,8 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handleIdException(Exception invalidException) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError(invalidException.getMessage());
-        res.setMessage("Exception occurs ... ");
+        res.setError("Exception occurs ... ");
+        res.setMessage(invalidException.getMessage());
         return ResponseEntity.badRequest().body(res);
     }
 
@@ -43,8 +43,8 @@ public class GlobalException {
             NoResourceFoundException invalidException) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.NOT_FOUND.value());
-        res.setError(invalidException.getMessage());
-        res.setMessage("Exception occurs ... ");
+        res.setError("404 Not Found !!!");
+        res.setMessage(invalidException.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
 
@@ -71,8 +71,8 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handleFileUpload(Exception exception) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError(exception.getMessage());
-        res.setMessage("Exception upload file ... ");
+        res.setError("Exception upload file ... ");
+        res.setMessage(exception.getMessage());
         return ResponseEntity.badRequest().body(res);
     }
 
@@ -82,8 +82,8 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handlePermissionException(PermissionInvalidException exception) {
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.FORBIDDEN.value());
-        res.setError(exception.getMessage());
-        res.setMessage("Forbidden !!!! ");
+        res.setError("Forbidden !!!! ");
+        res.setMessage(exception.getMessage());
         return ResponseEntity.badRequest().body(res);
     }
 
