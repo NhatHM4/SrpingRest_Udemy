@@ -22,6 +22,15 @@ import vn.hoidanit.jobhunter.domain.response.RestResponse;
 @RestControllerAdvice
 public class GlobalException {
 
+    @ExceptionHandler(value = { Exception.class })
+    public ResponseEntity<RestResponse<Object>> handleALLException(Exception invalidException) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.BAD_REQUEST.value());
+        res.setError("Internal Server Error ... !!! ");
+        res.setMessage(invalidException.getMessage());
+        return ResponseEntity.badRequest().body(res);
+    }
+
     @ExceptionHandler(value = {
             UsernameNotFoundException.class,
             BadCredentialsException.class,
